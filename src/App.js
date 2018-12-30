@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+const ITEMS_URL = 'https://192.168.1.106:4567/items.json';
 class App extends Component {
 
   state = {
@@ -11,7 +12,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:4567/items.json')
+    fetch(`${ITEMS_URL}/items.json`)
     .then(response => response.json())
     .then(items => {
       this.setState({ items, loading: false })
@@ -21,7 +22,7 @@ class App extends Component {
   addItem = (e) => {
     e.preventDefault()
 
-    fetch('http://localhost:4567/items.json', {
+    fetch(`${ITEMS_URL}/items.json`, {
       method: 'POST',
       body: JSON.stringify({ item: this.state.todoItem }),
       headers:{
@@ -30,14 +31,18 @@ class App extends Component {
     })
     .then(response => response.json())
     .then(items => {
-      this.setState({ items })
+      if(items.error) {
+        alert(items.error)
+      } else {
+        this.setState({ items })
+      }
     })
 
     this.setState({ todoItem: '' })
   }
 
   deleteItem = (itemId) => {
-    fetch('http://localhost:4567/items.json', {
+    fetch(`${ITEMS_URL}/items.json`, {
       method: 'DELETE',
       body: JSON.stringify({ id: itemId }),
       headers:{
@@ -46,7 +51,11 @@ class App extends Component {
     })
     .then(response => response.json())
     .then(items => {
-      this.setState({ items })
+      if(items.error) {
+        alert(items.error)
+      } else {
+        this.setState({ items })
+      }
     })
   }
 
