@@ -8,6 +8,8 @@ import './App.css';
 import GreyProfile from './grey_profile.png'
 import Back from './back.png'
 
+
+
 // const ITEMS_URL = "http://[YOUR LOCAL IP ADDRESS]:4567/items.json"
 const ITEMS_URL = "http://localhost:4567/items.json"
 
@@ -49,6 +51,38 @@ class Profile extends Component {
     })
   }
 
+  testPushMessage = () => {
+    global.registration.showNotification('Test Message', {
+      body: 'Success!'
+    })
+  }
+
+  subscribe = () => {
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+    
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+    
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+    const key = 'BAgysfmwMZusMCX9REDAI_nq9PCrDMf_tva8jHTY5rykZN-nUVcPpwnm7r-qcE3nWS3BNT5VW8vnzASwevuFZgc';
+    global.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlB64ToUint8Array(key)
+      }).then(sub => {
+        console.log("Subscribed!")
+      }).catch(err => {
+        console.log("Did not subscribe.")
+      })
+  }
+
   render() {
     return (
       <div>
@@ -88,7 +122,7 @@ class Profile extends Component {
               <button
                 onClick={this.takeImage}
               >Take Image</button>
-
+ 
               <canvas 
                 ref={c => this._canvas = c}
                 style={{ display: 'none' }}
@@ -100,11 +134,19 @@ class Profile extends Component {
           <br />
           {
             this.state.supportsCamera &&
+            <div>
+               <br />
+              <button onClick={this.subscribe}>Subscribe for Notifications</button>
             <button
               onClick={this.startChangeImage}
             >
               Toggle Camera
             </button>
+            <br />
+            <button
+              onClick={this.testPushMessage}
+            >Test Push Message</button>
+            </div>
           }
         </div>
 
